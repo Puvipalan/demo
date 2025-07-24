@@ -1,0 +1,5 @@
+com\example\demo\rest\services\MediaStreamLoader.class
+com\example\demo\DemoApplication.class
+com\example\demo\rest\controllers\MediaPlayController.class
+com\example\demo\rest\services\MediaStreamLoaderImpl.class
+com\example\demo\ServletInitializer.class

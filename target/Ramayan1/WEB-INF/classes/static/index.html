@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Bhanumathy Puvipalan Events Video List and Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .player-container {
+            margin-bottom: 20px;
+        }
+
+        video, audio {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<h1>Bhanu Family Events Video Player</h1>
+<video controls id="videoPlayer" width="640">
+    <source id="videoSource" src="/api/media/Video/musicId" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+<audio controls id="audioPlayer">
+    <source id="audioSource" src="/api/media/Musics/musicId" type="audio/mp3">
+    Your browser does not support the audio element.
+</audio>
+<div class="controls">
+    <button onclick="toggleFullscreen()">Fullscreen</button>
+    <label for="playbackRate">Speed:</label>
+    <select id="playbackRate" onchange="changePlaybackRate()">
+        <option value="0.5">0.5x</option>
+        <option selected value="1">1x</option>
+        <option value="1.5">1.5x</option>
+        <option value="2">2x</option>
+    </select>
+    <label for="volumeControl">Volume:</label>
+    <input id="volumeControl" max="1" min="0" onchange="changeVolume()" step="0.1" type="range" value="1">
+</div>
+<div class="playlist">
+    <h2>Playlist</h2>
+    <button onclick="changeVideo('/api/media/Video/Intermezzo')">Intermezzo</button>
+    <button onclick="changeVideo('/api/media/Video/Polanaise')">Polanaise</button>
+    <button onclick="changeVideo('/api/media/Video/Entertainer')">Entertainer</button>
+    <button onclick="changeVideo('/api/media/Video/Tarentella')">Tarentella</button>
+    <button onclick="changeVideo('/api/media/Video/BhanuPuviWed1')">BhanuWedding</button>
+    <button onclick="changeVideo('/api/media/Video/BhanuPuviWed2')">BhanuRegistration</button>
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoSource = document.getElementById('videoSource');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audioSource = document.getElementById('audioSource');
+
+        function changeVideo(src) {
+            // Add a timestamp to force reload
+            const uniqueSrc = src + '?t=' + new Date().getTime();
+            const uniqueAudioSrc = src + '?t=' + new Date().getTime();
+            videoSource.src = uniqueSrc;
+            audioSource.src = uniqueAudioSrc;
+            // Load both
+            videoPlayer.load();
+            audioPlayer.load();
+            // Sync play/pause/seek
+            videoPlayer.onplay = () => audioPlayer.play();
+            videoPlayer.onpause = () => audioPlayer.pause();
+            videoPlayer.onseeking = () => {
+                audioPlayer.currentTime = videoPlayer.currentTime;
+            };
+            videoPlayer.ontimeupdate = () => {
+                if (Math.abs(videoPlayer.currentTime - audioPlayer.currentTime) > 0.3) {
+                    audioPlayer.currentTime = videoPlayer.currentTime;
+                }
+            };
+            // Play both
+            videoPlayer.play();
+            audioPlayer.play();
+        }
+
+        function toggleFullscreen() {
+            if (videoPlayer.requestFullscreen) {
+                videoPlayer.requestFullscreen();
+            } else if (videoPlayer.webkitRequestFullscreen) {
+                videoPlayer.webkitRequestFullscreen();
+            } else if (videoPlayer.msRequestFullscreen) {
+                videoPlayer.msRequestFullscreen();
+            }
+        }
+
+        function changePlaybackRate() {
+            const rate = document.getElementById('playbackRate').value;
+            videoPlayer.playbackRate = parseFloat(rate);
+            audioPlayer.playbackRate = parseFloat(rate);
+        }
+
+        function changeVolume() {
+            const volume = document.getElementById('volumeControl').value;
+            videoPlayer.volume = parseFloat(volume);
+            audioPlayer.volume = parseFloat(volume);
+        }
+
+        // Initialize volume control value
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('volumeControl').value = videoPlayer.volume;
+
+            // Setup initial event handlers
+            videoPlayer.onplay = () => audioPlayer.play();
+            videoPlayer.onpause = () => audioPlayer.pause();
+            videoPlayer.onseeking = () => {
+                audioPlayer.currentTime = videoPlayer.currentTime;
+            };
+            videoPlayer.ontimeupdate = () => {
+                if (Math.abs(videoPlayer.currentTime - audioPlayer.currentTime) > 0.3) {
+                    audioPlayer.currentTime = videoPlayer.currentTime;
+                }
+            };
+        });
+    </script>
+</div>
+</body>
+</html>
